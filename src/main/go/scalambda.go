@@ -10,6 +10,8 @@ import (
 /*
 #cgo CFLAGS: -I/usr/lib/jvm/java-8-openjdk-amd64/include
 #cgo CFLAGS: -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
+#cgo CFLAGS: -I/home/steven/Code/scalambda
+#include <snoble_scalambda_Scalambda.h>
 #include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,8 +55,8 @@ func communicateJava(input interface{}) (interface{}, error) {
 	return resp, nil
 }
 
-//export Java_snoble_scalambda_start
-func Java_snoble_scalambda_start(env *C.JNIEnv, clazz C.jclass) {
+//export Java_snoble_scalambda_Scalambda_start
+func Java_snoble_scalambda_Scalambda_start(env *C.JNIEnv, clazz C.jobject) {
 	log.SetPrefix("GO - ")
 
 	go func() {
@@ -62,15 +64,15 @@ func Java_snoble_scalambda_start(env *C.JNIEnv, clazz C.jclass) {
 	}()
 }
 
-//export Java_snoble_scalambda_writeResponse
-func Java_snoble_scalambda_writeResponse(env *C.JNIEnv, clazz C.jclass, input C.jstring) {
+//export Java_snoble_scalambda_Scalambda_writeResponse
+func Java_snoble_scalambda_Scalambda_writeResponse(env *C.JNIEnv, clazz C.jobject, input C.jstring) {
 	a := C.convert_to_cstring(env, input)
 	b := C.GoString(a)
 	javaResponse <- b
 }
 
-//export Java_snoble_scalambda_readRequest
-func Java_snoble_scalambda_readRequest(env *C.JNIEnv, clazz C.jclass) C.jstring {
+//export Java_snoble_scalambda_Scalambda_readRequest
+func Java_snoble_scalambda_Scalambda_readRequest(env *C.JNIEnv, clazz C.jobject) C.jstring {
 	input := <-goRequest
 	cstr := C.CString(input)
 	cjstring := C.convert_to_jstring(env, cstr)
