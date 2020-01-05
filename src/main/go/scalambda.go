@@ -10,8 +10,6 @@ import (
 /*
 #cgo CFLAGS: -I/usr/lib/jvm/java-8-openjdk-amd64/include
 #cgo CFLAGS: -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
-#cgo CFLAGS: -I/home/steven/Code/scalambda
-#include <snoble_scalambda_Scalambda.h>
 #include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,6 +57,7 @@ func communicateJava(input interface{}) (interface{}, error) {
 func Java_snoble_scalambda_Scalambda_start(env *C.JNIEnv, clazz C.jobject) {
 	log.SetPrefix("GO - ")
 
+	log.Println("Starting")
 	go func() {
 		lambda.Start(communicateJava)
 	}()
