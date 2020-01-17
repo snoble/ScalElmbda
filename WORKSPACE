@@ -77,3 +77,16 @@ http_archive(
     sha256 = "2ef429f5d7ce7111263289644d233707dba35e39696377ebab8b0bc701f7818e",
 )
 
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+git_repository(
+    name = "rules_graal",
+    commit = "9c3a41e476e8e61748c45df122c452e5281d55ee",
+    remote = "git://github.com/andyscott/rules_graal",
+)
+
+load("@rules_graal//graal:graal_bindist.bzl", "graal_bindist_repository")
+
+graal_bindist_repository(
+    name = "graal",
+    version = "19.0.0",
+)
