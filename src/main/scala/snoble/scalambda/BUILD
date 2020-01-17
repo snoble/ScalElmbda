@@ -4,7 +4,8 @@ scala_binary(
     srcs = ["Scalambda.scala"],
     deps = ["//src/main/java/snoble/scalambda:java_scalambda"],
     main_class = "snoble.scalambda.Scalambda",
-    jvm_flags = [ "-Djava.library.path=$(pwd)/../../../../../go/linux_amd64_stripped_c-shared" ],
+    jvm_flags = [ "-Djava.library.path=$(pwd)/src/main/go/linux_amd64_stripped_c-shared" ],
+    data = ["//src/main/go:go-scalambda"],
 )
 
 scala_library(
