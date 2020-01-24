@@ -78,15 +78,21 @@ http_archive(
 )
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-git_repository(
+# git_repository(
+#    name = "rules_graal",
+#    remote = "git@github.com:snoble/rules_graal.git",
+#    commit = "e64fc3d122f38d2cb7ee55d54611957d93a70bb0",
+# )
+
+local_repository(
     name = "rules_graal",
-    commit = "9c3a41e476e8e61748c45df122c452e5281d55ee",
-    remote = "git://github.com/andyscott/rules_graal",
+    path = "/home/steven/Code/rules_graal",
 )
 
 load("@rules_graal//graal:graal_bindist.bzl", "graal_bindist_repository")
 
 graal_bindist_repository(
     name = "graal",
-    version = "19.0.0",
+    version = "19.3.1",
+    java_version = "8"
 )
