@@ -13,6 +13,6 @@ go_binary(
         "@com_github_aws_aws_lambda_go//lambda:go_default_library",
         "@com_github_pkg_errors//:go_default_library",
     ],
-    linkmode = "c-shared"
+    linkmode = "c-shared",
 )
 

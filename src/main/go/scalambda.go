@@ -53,8 +53,8 @@ func communicateJava(input interface{}) (interface{}, error) {
 	return resp, nil
 }
 
-//export Java_snoble_scalambda_ScalambdaShim_start
-func Java_snoble_scalambda_ScalambdaShim_start(env *C.JNIEnv, clazz C.jobject) {
+//export Java_snoble_scalambda_Scalambda_start
+func Java_snoble_scalambda_Scalambda_start(env *C.JNIEnv, clazz C.jclass) {
 	log.SetPrefix("GO - ")
 
 	log.Println("Starting")
@@ -63,15 +63,15 @@ func Java_snoble_scalambda_ScalambdaShim_start(env *C.JNIEnv, clazz C.jobject) {
 	}()
 }
 
-//export Java_snoble_scalambda_ScalambdaShim_writeResponse
-func Java_snoble_scalambda_ScalambdaShim_writeResponse(env *C.JNIEnv, clazz C.jobject, input C.jstring) {
+//export Java_snoble_scalambda_Scalambda_writeResponse
+func Java_snoble_scalambda_Scalambda_writeResponse(env *C.JNIEnv, clazz C.jclass, input C.jstring) {
 	a := C.convert_to_cstring(env, input)
 	b := C.GoString(a)
 	javaResponse <- b
 }
 
-//export Java_snoble_scalambda_ScalambdaShim_readRequest
-func Java_snoble_scalambda_ScalambdaShim_readRequest(env *C.JNIEnv, clazz C.jobject) C.jstring {
+//export Java_snoble_scalambda_Scalambda_readRequest
+func Java_snoble_scalambda_Scalambda_readRequest(env *C.JNIEnv, clazz C.jclass) C.jstring {
 	input := <-goRequest
 	cstr := C.CString(input)
 	cjstring := C.convert_to_jstring(env, cstr)
