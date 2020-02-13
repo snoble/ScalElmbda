@@ -12,3 +12,10 @@ scala_library(
     srcs = ["Scalambda.scala"],
     visibility = ["//visibility:public"],
 )
+
+scala_library(
+    name = "lib_scalambda_simple",
+    srcs = ["ScalambdaSimple.scala"],
+    deps = ["//:requests"],
+    visibility = ["//visibility:public"],
+)

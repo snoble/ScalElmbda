@@ -1,0 +1,11 @@
+[
+  {
+    "name" : "javax.net.ssl.HttpsURLConnection",
+    "allDeclaredConstructors" : false,
+    "allPublicConstructors" : false,
+    "allDeclaredMethods" : false,
+    "allPublicMethods" : true,
+    "allDeclaredClasses" : false,
+    "allPublicClasses" : false
+  }
+]

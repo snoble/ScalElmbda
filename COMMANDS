@@ -1,0 +1,3 @@
+aws lambda create-function --function-name scalambda5 --zip-file fileb://scalambda.zip --runtime provided --handler function.handler --role arn:aws:iam::445804479990:role/lambda-role
+aws lambda invoke --function-name scalambda5 --payload '{"text":"Hello"}' response.txt
+
