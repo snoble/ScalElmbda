@@ -18,7 +18,7 @@ object ScalambdaSimple {
       println(s"body: ${request.body}")
       requestId.foreach( id =>
         Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/$id/response")
-          .postData("{\"body\": \"[1]\"}")
+          .postData("{\"body\": \"[1]\", \"headers\": { \"Access-Control-Allow-Origin\": \"*\"}}")
           .asString
           )
       handleRequest()
