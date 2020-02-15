@@ -116,6 +116,11 @@ maven_install(
         "com.lihaoyi:requests_2.12:0.5.1",
 	"com.lihaoyi:geny_2.12:0.5.1",
 	"org.scalaj:scalaj-http_2.12:2.4.2",
+	"io.circe:circe-core_2.12:0.13.0",
+	"io.circe:circe-numbers_2.12:0.13.0",
+	"org.typelevel:cats-core_2.12:2.1.0",
+	"org.typelevel:cats-macros_2.12:2.1.0",
+	"org.typelevel:cats-kernel_2.12:2.1.0",
     ],
     repositories = [
         "https://repo1.maven.org/maven2/",

@@ -16,6 +16,6 @@ scala_library(
 scala_library(
     name = "lib_scalambda_simple",
     srcs = ["ScalambdaSimple.scala"],
-    deps = ["//:requests"],
+    deps = ["//:scalaj", "//:circe"],
     visibility = ["//visibility:public"],
 )

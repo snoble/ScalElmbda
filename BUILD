@@ -3,9 +3,21 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 gazelle(name = "gazelle")
 
 java_library(
-    name = "requests",
+    name = "scalaj",
     exports = [
 	"@maven//:org_scalaj_scalaj_http_2_12",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+java_library(
+    name = "circe",
+    exports = [
+	"@maven//:io_circe_circe_core_2_12",
+	"@maven//:io_circe_circe_numbers_2_12_0_13_0",
+	"@maven//:org_typelevel_cats_core_2_12_2_1_0",
+	"@maven//:org_typelevel_cats_kernel_2_12_2_1_0",
+	"@maven//:org_typelevel_cats_macros_2_12_2_1_0",
     ],
     visibility = ["//visibility:public"],
 )
