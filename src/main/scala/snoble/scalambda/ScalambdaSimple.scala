@@ -2,7 +2,9 @@ package snoble.scalambda
 
 import scalaj.http._
 import scala.annotation.tailrec
-import io.circe.syntax._, io.circe.{Encoder, JsonObject}
+import io.circe.syntax._, io.circe.{Encoder, Json}
+
+import snoble.scalambda.proto.simple.Simple
 
 object ScalambdaSimple {
 
@@ -11,9 +13,10 @@ object ScalambdaSimple {
     headers: Map[String, String]
   )
   implicit val encodeResponse: Encoder[Response] = Encoder.instance[Response](r =>
-    Map("body" -> r.body.asJson,
+    Json.obj(
+      "body" -> r.body.asJson,
       "headers" -> r.headers.asJson
-    ).asJson
+    )
   )
 
   def main(args: Array[String]): Unit = {
@@ -26,6 +29,8 @@ object ScalambdaSimple {
       val requestId: Option[String] = request.header("Lambda-Runtime-Aws-Request-Id")
       println(s"requestId: $requestId")
       println(s"body: ${request.body}")
+
+      // val ss = Simple.getDefaultInstance()
 
       val body = Map("hello"-> "World").asJson.toString
       val response = Response(body, Map("Access-Control-Allow-Origin" -> "*")).asJson

@@ -1,4 +1,5 @@
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_binary", "scala_library")
+
 scala_binary(
     name = "scala_scalambda",
     srcs = ["Scalambda.scala"],
@@ -16,6 +17,6 @@ scala_library(
 scala_library(
     name = "lib_scalambda_simple",
     srcs = ["ScalambdaSimple.scala"],
-    deps = ["//:scalaj", "//:circe"],
+    deps = ["//:scalaj", "//:circe", "//src/main/proto:simple_scala_proto", "//:protobuf",],
     visibility = ["//visibility:public"],
 )

@@ -22,6 +22,15 @@ java_library(
     visibility = ["//visibility:public"],
 )
 
+java_library(
+    name = "protobuf",
+    exports = [
+        "@maven//:com_google_protobuf_protobuf_java",
+#        "@maven//:com_google_api_grpc_proto_google_common_protos",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 load("@rules_graal//graal:graal.bzl", "graal_binary")
 graal_binary(
     name = "scalambda-native",
