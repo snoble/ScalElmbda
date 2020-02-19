@@ -15,7 +15,8 @@ object ScalambdaSimple {
   implicit val encodeResponse: Encoder[Response] = Encoder.instance[Response](r =>
     Json.obj(
       "body" -> r.body.asJson,
-      "headers" -> r.headers.asJson
+      "headers" -> r.headers.asJson,
+      "isBase64Encoded" -> true.asJson
     )
   )
 
@@ -30,10 +31,16 @@ object ScalambdaSimple {
       println(s"requestId: $requestId")
       println(s"body: ${request.body}")
 
-      // val ss = Simple.getDefaultInstance()
+      val simpleByteArray = Simple("first", "last").toByteArray
+      val simpleEncoded = java.util.Base64.getEncoder.encodeToString(simpleByteArray)
 
-      val body = Map("hello"-> "World").asJson.toString
-      val response = Response(body, Map("Access-Control-Allow-Origin" -> "*")).asJson
+      // val body = Map("hello"-> "World").asJson.toString
+      val body = simpleEncoded
+      val headers = Map("Access-Control-Allow-Origin" -> "*", "Content-Type" -> "application/x-protobuf")
+      val response = Response(body, headers).asJson
+
+      println(s"response: $response")
+
       requestId.foreach( id =>
         Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/$id/response")
           .postData(response.toString)
