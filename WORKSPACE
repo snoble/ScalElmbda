@@ -24,7 +24,14 @@ load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
 scala_register_toolchains()
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
-scala_repositories()
+scala_repositories((
+    "2.12.10",
+    {
+       "scala_compiler": "cedc3b9c39d215a9a3ffc0cc75a1d784b51e9edc7f13051a1b4ad5ae22cfbc0c",
+       "scala_library": "0a57044d10895f8d3dd66ad4286891f607169d948845ac51e17b4c1cf0ab569d",
+       "scala_reflect": "56b609e1bab9144fb51525bfa01ccd72028154fc40a58685a1e9adcbe7835730"
+    }
+))
 
 protobuf_version="3.11.4"
 protobuf_version_sha256="a79d19dcdf9139fa4b81206e318e33d245c4c9da1ffed21c87288ed4380426f9"
@@ -41,7 +48,7 @@ load("@io_bazel_rules_scala//scala_proto:toolchains.bzl", "scala_proto_register_
 scala_proto_register_toolchains()
 
 load("@io_bazel_rules_scala//scala_proto:scala_proto.bzl", "scala_proto_repositories")
-scala_proto_repositories()
+scala_proto_repositories("2.12.10")
 
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")

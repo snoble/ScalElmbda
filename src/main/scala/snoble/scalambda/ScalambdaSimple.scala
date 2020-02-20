@@ -24,11 +24,14 @@ object ScalambdaSimple {
   case class AWSRequest(
     body: String
   )
-  implicit val decodeFoo: Decoder[AWSRequest] = Decoder.instanceTry[AWSRequest]( c =>
+  implicit val decodeFoo: Decoder[AWSRequest] = Decoder.instance[AWSRequest]( c =>
       for {
-        body <- Try(c.downField("body").as[String].right.get)
+        body <- c.downField("body").as[String]
       } yield AWSRequest(body)
   )
+
+  val base64Decoder = java.util.Base64.getDecoder()
+  val base64Encoder = java.util.Base64.getEncoder()
 
   def main(args: Array[String]): Unit = {
     println("Starting")
@@ -39,25 +42,27 @@ object ScalambdaSimple {
       val request: HttpResponse[String] = Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/next").asString
       val requestId: Option[String] = request.header("Lambda-Runtime-Aws-Request-Id")
       println(s"requestId: $requestId")
-      println(s"body: ${request.body}")
-      println(s"body: ${decode[AWSRequest](request.body)}")
-
-      val requestByteArray = java.util.Base64.getDecoder.decode(decode[AWSRequest](request.body).right.get.body)
-      val simpleRequest = Request.parseFrom(requestByteArray)
-
-      val simpleByteArray = Response(simpleRequest.low, simpleRequest.high).toByteArray
-      val simpleEncoded = java.util.Base64.getEncoder.encodeToString(simpleByteArray)
 
       val headers = Map("Access-Control-Allow-Origin" -> "*", "Content-Type" -> "application/x-protobuf")
-      val response = AWSResponse(simpleEncoded, headers).asJson
+      val response = for {
+        body <- decode[AWSRequest](request.body)
+        requestByteArray = base64Decoder.decode(body.body)
+        simpleRequest = Request.parseFrom(requestByteArray)
+        simpleByteArray = Response(simpleRequest.low, simpleRequest.high).toByteArray
+        simpleEncoded = base64Encoder.encodeToString(simpleByteArray)
+      } yield AWSResponse(simpleEncoded, headers).asJson
 
-      println(s"response: $response")
-
-      requestId.foreach( id =>
-        Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/$id/response")
+      (requestId, response) match {
+        case (Some(id), Right(r)) => Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/$id/response")
           .postData(response.toString)
           .asString
-          )
+        case (Some(id), Left(_)) => Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/$id/error")
+          .postData(Map("errorMessage" -> "fail", "errorType" -> "BadFail").asJson.toString)
+          .asString
+        case (None, _) => Http(s"http://$runtimeApi/2018-06-01/runtime/invocation/init/error")
+          .postData(Map("errorMessage" -> "no request id", "errorType" -> "MissingRequestIdHeader").asJson.toString)
+          .asString
+      }
       handleRequest()
     }
 
