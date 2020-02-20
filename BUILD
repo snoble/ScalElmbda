@@ -15,9 +15,12 @@ java_library(
     exports = [
 	"@maven//:io_circe_circe_core_2_12",
 	"@maven//:io_circe_circe_numbers_2_12_0_13_0",
+	"@maven//:io_circe_circe_parser_2_12_0_13_0",
+	"@maven//:io_circe_circe_jawn_2_12_0_13_0",
 	"@maven//:org_typelevel_cats_core_2_12_2_1_0",
 	"@maven//:org_typelevel_cats_kernel_2_12_2_1_0",
 	"@maven//:org_typelevel_cats_macros_2_12_2_1_0",
+	"@maven//:org_typelevel_jawn_parser_2_12_1_0_0",
     ],
     visibility = ["//visibility:public"],
 )

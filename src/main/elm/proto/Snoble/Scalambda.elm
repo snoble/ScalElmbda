@@ -2,9 +2,9 @@
 
 
 module Snoble.Scalambda exposing
-    ( Simple
-    , simpleDecoder
-    , toSimpleEncoder
+    ( Response, Request
+    , responseDecoder, requestDecoder
+    , toResponseEncoder, toRequestEncoder
     )
 
 {-| ProtoBuf module: `Snoble.Scalambda`
@@ -12,7 +12,7 @@ module Snoble.Scalambda exposing
 This module was generated automatically using
 
   - [`protoc-gen-elm`](https://www.npmjs.com/package/protoc-gen-elm) 1.0.0-beta-2
-  - `protoc` 3.11.4
+  - `protoc` 3.9.0
   - the following specification file: `src/main/proto/simple.proto`
 
 To run it use [`elm-protocol-buffers`](https://package.elm-lang.org/packages/eriktim/elm-protocol-buffers/1.1.0) version 1.1.0 or higher.
@@ -20,17 +20,17 @@ To run it use [`elm-protocol-buffers`](https://package.elm-lang.org/packages/eri
 
 # Model
 
-@docs Simple
+@docs Response, Request
 
 
 # Decoder
 
-@docs simpleDecoder
+@docs responseDecoder, requestDecoder
 
 
 # Encoder
 
-@docs toSimpleEncoder
+@docs toResponseEncoder, toRequestEncoder
 
 -}
 
@@ -42,11 +42,19 @@ import Protobuf.Encode as Encode
 -- MODEL
 
 
-{-| `Simple` message
+{-| `Response` message
 -}
-type alias Simple =
-    { first : String
+type alias Response =
+    { first : Int
     , second : String
+    }
+
+
+{-| `Request` message
+-}
+type alias Request =
+    { high : String
+    , low : Int
     }
 
 
@@ -54,13 +62,23 @@ type alias Simple =
 -- DECODER
 
 
-{-| `Simple` decoder
+{-| `Response` decoder
 -}
-simpleDecoder : Decode.Decoder Simple
-simpleDecoder =
-    Decode.message (Simple "" "")
-        [ Decode.optional 1 Decode.string setFirst
+responseDecoder : Decode.Decoder Response
+responseDecoder =
+    Decode.message (Response 0 "")
+        [ Decode.optional 1 Decode.int32 setFirst
         , Decode.optional 2 Decode.string setSecond
+        ]
+
+
+{-| `Request` decoder
+-}
+requestDecoder : Decode.Decoder Request
+requestDecoder =
+    Decode.message (Request "" 0)
+        [ Decode.optional 1 Decode.string setHigh
+        , Decode.optional 2 Decode.int32 setLow
         ]
 
 
@@ -68,13 +86,23 @@ simpleDecoder =
 -- ENCODER
 
 
-{-| `Simple` encoder
+{-| `Response` encoder
 -}
-toSimpleEncoder : Simple -> Encode.Encoder
-toSimpleEncoder model =
+toResponseEncoder : Response -> Encode.Encoder
+toResponseEncoder model =
     Encode.message
-        [ ( 1, Encode.string model.first )
+        [ ( 1, Encode.int32 model.first )
         , ( 2, Encode.string model.second )
+        ]
+
+
+{-| `Request` encoder
+-}
+toRequestEncoder : Request -> Encode.Encoder
+toRequestEncoder model =
+    Encode.message
+        [ ( 1, Encode.string model.high )
+        , ( 2, Encode.int32 model.low )
         ]
 
 
@@ -90,3 +118,13 @@ setFirst value model =
 setSecond : a -> { b | second : a } -> { b | second : a }
 setSecond value model =
     { model | second = value }
+
+
+setHigh : a -> { b | high : a } -> { b | high : a }
+setHigh value model =
+    { model | high = value }
+
+
+setLow : a -> { b | low : a } -> { b | low : a }
+setLow value model =
+    { model | low = value }
