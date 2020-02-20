@@ -1,47 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-http_archive(
-    name = "io_bazel_rules_go",
-    urls = [
-        "https://storage.googleapis.com/bazel-mirror/github.com/bazelbuild/rules_go/releases/download/v0.20.3/rules_go-v0.20.3.tar.gz",
-        "https://github.com/bazelbuild/rules_go/releases/download/v0.20.3/rules_go-v0.20.3.tar.gz",
-    ],
-    sha256 = "e88471aea3a3a4f19ec1310a55ba94772d087e9ce46e41ae38ecebe17935de7b",
-)
-
-load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies", "go_register_toolchains")
-
-go_rules_dependencies()
-
-go_register_toolchains()
-
-http_archive(
-    name = "bazel_gazelle",
-    urls = [
-        "https://storage.googleapis.com/bazel-mirror/github.com/bazelbuild/bazel-gazelle/releases/download/v0.19.1/bazel-gazelle-v0.19.1.tar.gz",
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.19.1/bazel-gazelle-v0.19.1.tar.gz",
-    ],
-    sha256 = "86c6d481b3f7aedc1d60c1c211c6f76da282ae197c3b3160f54bd3a8f847896f",
-)
-
-load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies", "go_repository")
-
-gazelle_dependencies()
-
-go_repository(
-    name = "com_github_aws_aws_lambda_go",
-    importpath = "github.com/aws/aws-lambda-go",
-    sum = "h1:SuCy7H3NLyp+1Mrfp+m80jcbi9KYWAs9/BXwppwRDzY=",
-    version = "v1.13.3",
-)
-
-go_repository(
-    name = "com_github_pkg_errors",
-    importpath = "github.com/pkg/errors",
-    sum = "h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=",
-    version = "v0.9.1",
-)
-
 rules_scala_version="81238bba1b97f538a3fb30353829ff4d80550ff9" # update this as needed
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -69,13 +27,6 @@ http_archive(
     strip_prefix = "protobuf-%s" % protobuf_version,
     sha256 = protobuf_version_sha256,
 )
-
-#http_archive(
-#    name = "com_google_protobuf",
-#    sha256 = "9510dd2afc29e7245e9e884336f848c8a6600a14ae726adb6befdb4f786f0be2",
-#    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.11.4.zip"],
-#    strip_prefix = "protobuf-3.11.4",
-#)
 
 # bazel-skylib 0.8.0 released 2019.03.20 (https://github.com/bazelbuild/bazel-skylib/releases/tag/0.8.0)
 skylib_version = "0.8.0"

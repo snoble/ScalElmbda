@@ -1,7 +1,3 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
-
-gazelle(name = "gazelle")
-
 java_library(
     name = "scalaj",
     exports = [
@@ -29,20 +25,11 @@ java_library(
     name = "protobuf",
     exports = [
         "@maven//:com_google_protobuf_protobuf_java",
-#        "@maven//:com_google_api_grpc_proto_google_common_protos",
     ],
     visibility = ["//visibility:public"],
 )
 
 load("@rules_graal//graal:graal.bzl", "graal_binary")
-graal_binary(
-    name = "scalambda-native",
-    deps = ["//src/main/scala/snoble/scalambda:lib_scalambda"],
-    data = ["//src/main/go:go-scalambda"],
-    main_class = "snoble.scalambda.Scalambda",
-    jni_configuration = "jniconfig",
-)
-
 graal_binary(
     name = "scalambda-simple-native",
     deps = ["//src/main/scala/snoble/scalambda:lib_scalambda_simple"],
