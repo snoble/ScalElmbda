@@ -52,15 +52,10 @@ scala_proto_repositories("2.12.10")
 
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-# git_repository(
-#    name = "rules_graal",
-#    remote = "git@github.com:snoble/rules_graal.git",
-#    commit = "e64fc3d122f38d2cb7ee55d54611957d93a70bb0",
-# )
-
-local_repository(
-    name = "rules_graal",
-    path = "/home/steven/Code/rules_graal",
+git_repository(
+   name = "rules_graal",
+   remote = "git@github.com:andyscott/rules_graal.git",
+   commit = "1b5f6deef8352c4b64541bb0f699fd2af5ae6b0b",
 )
 
 load("@rules_graal//graal:graal_bindist.bzl", "graal_bindist_repository")
