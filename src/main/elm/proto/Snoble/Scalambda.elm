@@ -2,9 +2,9 @@
 
 
 module Snoble.Scalambda exposing
-    ( Response, Request
-    , responseDecoder, requestDecoder
-    , toResponseEncoder, toRequestEncoder
+    ( Response, HighLowRequest, ListOfStringsRequest, RequestType(..), Request
+    , responseDecoder, highLowRequestDecoder, listOfStringsRequestDecoder, requestDecoder
+    , toResponseEncoder, toHighLowRequestEncoder, toListOfStringsRequestEncoder, toRequestEncoder
     )
 
 {-| ProtoBuf module: `Snoble.Scalambda`
@@ -20,17 +20,17 @@ To run it use [`elm-protocol-buffers`](https://package.elm-lang.org/packages/eri
 
 # Model
 
-@docs Response, Request
+@docs Response, HighLowRequest, ListOfStringsRequest, RequestType, Request
 
 
 # Decoder
 
-@docs responseDecoder, requestDecoder
+@docs responseDecoder, highLowRequestDecoder, listOfStringsRequestDecoder, requestDecoder
 
 
 # Encoder
 
-@docs toResponseEncoder, toRequestEncoder
+@docs toResponseEncoder, toHighLowRequestEncoder, toListOfStringsRequestEncoder, toRequestEncoder
 
 -}
 
@@ -50,11 +50,32 @@ type alias Response =
     }
 
 
+{-| `HighLowRequest` message
+-}
+type alias HighLowRequest =
+    { high : String
+    , low : Int
+    }
+
+
+{-| `ListOfStringsRequest` message
+-}
+type alias ListOfStringsRequest =
+    { parts : List String
+    }
+
+
+{-| RequestType
+-}
+type RequestType
+    = RequestTypeHlRequest HighLowRequest
+    | RequestTypeStrings ListOfStringsRequest
+
+
 {-| `Request` message
 -}
 type alias Request =
-    { high : String
-    , low : Int
+    { requestType : Maybe RequestType
     }
 
 
@@ -72,13 +93,35 @@ responseDecoder =
         ]
 
 
+{-| `HighLowRequest` decoder
+-}
+highLowRequestDecoder : Decode.Decoder HighLowRequest
+highLowRequestDecoder =
+    Decode.message (HighLowRequest "" 0)
+        [ Decode.optional 1 Decode.string setHigh
+        , Decode.optional 2 Decode.int32 setLow
+        ]
+
+
+{-| `ListOfStringsRequest` decoder
+-}
+listOfStringsRequestDecoder : Decode.Decoder ListOfStringsRequest
+listOfStringsRequestDecoder =
+    Decode.message (ListOfStringsRequest [])
+        [ Decode.repeated 1 Decode.string .parts setParts
+        ]
+
+
 {-| `Request` decoder
 -}
 requestDecoder : Decode.Decoder Request
 requestDecoder =
-    Decode.message (Request "" 0)
-        [ Decode.optional 1 Decode.string setHigh
-        , Decode.optional 2 Decode.int32 setLow
+    Decode.message (Request Nothing)
+        [ Decode.oneOf
+            [ ( 1, Decode.map RequestTypeHlRequest highLowRequestDecoder )
+            , ( 2, Decode.map RequestTypeStrings listOfStringsRequestDecoder )
+            ]
+            setRequestType
         ]
 
 
@@ -96,13 +139,41 @@ toResponseEncoder model =
         ]
 
 
+{-| `HighLowRequest` encoder
+-}
+toHighLowRequestEncoder : HighLowRequest -> Encode.Encoder
+toHighLowRequestEncoder model =
+    Encode.message
+        [ ( 1, Encode.string model.high )
+        , ( 2, Encode.int32 model.low )
+        ]
+
+
+{-| `ListOfStringsRequest` encoder
+-}
+toListOfStringsRequestEncoder : ListOfStringsRequest -> Encode.Encoder
+toListOfStringsRequestEncoder model =
+    Encode.message
+        [ ( 1, Encode.list Encode.string model.parts )
+        ]
+
+
+toRequestTypeEncoder : RequestType -> ( Int, Encode.Encoder )
+toRequestTypeEncoder model =
+    case model of
+        RequestTypeHlRequest value ->
+            ( 1, toHighLowRequestEncoder value )
+
+        RequestTypeStrings value ->
+            ( 2, toListOfStringsRequestEncoder value )
+
+
 {-| `Request` encoder
 -}
 toRequestEncoder : Request -> Encode.Encoder
 toRequestEncoder model =
     Encode.message
-        [ ( 1, Encode.string model.high )
-        , ( 2, Encode.int32 model.low )
+        [ Maybe.withDefault ( 0, Encode.none ) <| Maybe.map toRequestTypeEncoder model.requestType
         ]
 
 
@@ -128,3 +199,13 @@ setHigh value model =
 setLow : a -> { b | low : a } -> { b | low : a }
 setLow value model =
     { model | low = value }
+
+
+setParts : a -> { b | parts : a } -> { b | parts : a }
+setParts value model =
+    { model | parts = value }
+
+
+setRequestType : a -> { b | requestType : a } -> { b | requestType : a }
+setRequestType value model =
+    { model | requestType = value }

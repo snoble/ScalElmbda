@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package snoble.scalambda;
+
+option java_package = "snoble.scalambda.proto";
+
+message Response {
+  int64 first = 1;
+  string second = 2;
+}
+
+message HighLowRequest {
+  string high = 1;
+  int64 low = 2;
+}
+
+message ListOfStringsRequest {
+  repeated string parts = 1;
+}
+
+message Request {
+  oneof request_type {
+    HighLowRequest hl_request = 1;
+    ListOfStringsRequest strings = 2;
+  }
+}
