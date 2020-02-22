@@ -13,32 +13,52 @@ main =
     Browser.document { init = init, update = update, view = view, subscriptions = subscriptions }
 
 
+apiRequest : RequestType -> (Response -> Msg) -> (Http.Error -> Msg) -> Cmd Msg
+apiRequest awsRequest responseHandler httpErrorHandler =
+    Http.request
+        { method = "PUT"
+        , url = "http://localhost:3000/"
+        , headers = []
+        , body = Http.bytesBody "application/x-protobuf" (Request (Just awsRequest) |> toRequestEncoder |> Encode.encode)
+        , expect =
+            Decode.expectBytes
+                (\result ->
+                    case result of
+                        Ok response ->
+                            responseHandler response
+
+                        Err error ->
+                            httpErrorHandler error
+                )
+                responseDecoder
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
 type Msg
-    = GotText (Result Http.Error Response)
+    = GotResponse Response
+    | WrongResponse
+    | HttpError Http.Error
 
 
 init : () -> ( String, Cmd Msg )
 init flags =
-    ( ""
-    , Http.request
-        { method = "PUT"
-        , url = "http://localhost:3000/"
-        , headers = []
-        , body = Http.bytesBody "application/x-protobuf" (Request (Just (RequestTypeHlRequest (HighLowRequest "up" 23))) |> toRequestEncoder |> Encode.encode)
-        , expect = Decode.expectBytes GotText responseDecoder
-        , timeout = Nothing
-        , tracker = Nothing
-        }
+    ( "Loading"
+    , apiRequest (RequestTypeHlRequest (HighLowRequest "up" 23)) GotResponse HttpError
     )
 
 
 update msg model =
     case msg of
-        GotText (Ok result) ->
+        GotResponse result ->
             ( String.join " " [ result.first |> String.fromInt, result.second ], Cmd.none )
 
-        GotText (Err error) ->
+        HttpError error ->
             ( error |> Debug.toString, Cmd.none )
+
+        WrongResponse ->
+            ( model, Cmd.none )
 
 
 view model =
