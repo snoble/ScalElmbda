@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 import Http
 import Protobuf.Decode as Decode
 import Protobuf.Encode as Encode
-import Snoble.Scalambda exposing (..)
+import Snoble.ScalElambda exposing (..)
 
 
 main =

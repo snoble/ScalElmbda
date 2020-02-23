@@ -1,4 +1,4 @@
-package snoble.scalambda
+package snoble.scalelmbda
 
 import scalaj.http._
 import scala.annotation.tailrec
@@ -6,9 +6,9 @@ import scala.util.Try
 import io.circe.syntax._, io.circe.{Encoder, Json, Decoder}, io.circe.parser.decode
 import scala.util.{Try, Success, Failure}
 
-import snoble.scalambda.proto.simple.{Request, Response, HighLowRequest, ListOfStringsRequest, HighLowResponse, ListOfStringsResponse}
+import snoble.scalelmbda.proto.simple.{Request, Response, HighLowRequest, ListOfStringsRequest, HighLowResponse, ListOfStringsResponse}
 
-object ScalambdaSimple {
+object ScalElmbdaSimple {
   val base64Decoder = java.util.Base64.getDecoder()
   val base64Encoder = java.util.Base64.getEncoder()
 

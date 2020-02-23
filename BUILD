@@ -31,24 +31,24 @@ java_library(
 
 load("@rules_graal//graal:graal.bzl", "graal_binary")
 graal_binary(
-    name = "scalambda-simple-native",
-    deps = ["//src/main/scala/snoble/scalambda:lib_scalambda_simple"],
-    main_class = "snoble.scalambda.ScalambdaSimple",
+    name = "scalelmbda-simple-native",
+    deps = ["//src/main/scala/snoble/scalelmbda:lib_scalelmbda_simple"],
+    main_class = "snoble.scalelmbda.ScalElmbdaSimple",
     reflection_configuration = "reflectconfig",
     graal_extra_args = ["--enable-http"],
 )
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_binary", "scala_library")
 scala_binary(
-    name = "scalambda-simple-jvm",
-    deps = ["//src/main/scala/snoble/scalambda:lib_scalambda_simple"],
-    main_class = "snoble.scalambda.ScalambdaSimple",
+    name = "scalelmbda-simple-jvm",
+    deps = ["//src/main/scala/snoble/scalelmbda:lib_scalelmbda_simple"],
+    main_class = "snoble.scalelmbda.ScalElmbdaSimple",
 )
 
 genrule(
-    name = "scalambda-zip",
-    srcs = ["bootstrap", ":scalambda-simple-native"],
+    name = "scalelmbda-zip",
+    srcs = ["bootstrap", ":scalelmbda-simple-native"],
     tools = ["@bazel_tools//tools/zip:zipper"],
-    outs = ["scalambda.zip"],
-    cmd = "$(location @bazel_tools//tools/zip:zipper) c $@ bootstrap $(locations :scalambda-simple-native)",
+    outs = ["scalelmbda.zip"],
+    cmd = "$(location @bazel_tools//tools/zip:zipper) c $@ bootstrap $(locations :scalelmbda-simple-native)",
 )
