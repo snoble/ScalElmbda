@@ -4,23 +4,40 @@ package snoble.scalambda;
 
 option java_package = "snoble.scalambda.proto";
 
-message Response {
-  int64 first = 1;
-  string second = 2;
-}
-
 message HighLowRequest {
   string high = 1;
   int64 low = 2;
+}
+
+message HighLowResponse {
+  int64 first = 1;
+  string second = 2;
 }
 
 message ListOfStringsRequest {
   repeated string parts = 1;
 }
 
+message ListOfStringsResponse {
+  string concatenated = 1;
+  int64 length = 2;
+}
+
 message Request {
   oneof request_type {
-    HighLowRequest hl_request = 1;
+    HighLowRequest hl = 1;
     ListOfStringsRequest strings = 2;
   }
+}
+
+message Response {
+  oneof response_type {
+    HighLowResponse hl = 1;
+    ListOfStringsResponse strings = 2;
+  }
+}
+
+service Service {
+  rpc HighLow (HighLowRequest) returns (HighLowResponse) {}
+  rpc ListOfString (ListOfStringsRequest) returns (ListOfStringsResponse) {}
 }

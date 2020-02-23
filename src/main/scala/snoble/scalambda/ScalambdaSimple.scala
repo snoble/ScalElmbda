@@ -6,7 +6,7 @@ import scala.util.Try
 import io.circe.syntax._, io.circe.{Encoder, Json, Decoder}, io.circe.parser.decode
 import scala.util.{Try, Success, Failure}
 
-import snoble.scalambda.proto.simple.{Request, Response, HighLowRequest, ListOfStringsRequest}
+import snoble.scalambda.proto.simple.{Request, Response, HighLowRequest, ListOfStringsRequest, HighLowResponse, ListOfStringsResponse}
 
 object ScalambdaSimple {
   val base64Decoder = java.util.Base64.getDecoder()
@@ -72,8 +72,8 @@ object ScalambdaSimple {
     Try {
       val headers = Map("Access-Control-Allow-Origin" -> "*", "Content-Type" -> "application/x-protobuf")
       val body = request.body.requestType match {
-        case Request.RequestType.HlRequest(HighLowRequest(high, low)) => Success(Response(low, high))
-        case Request.RequestType.Strings(ListOfStringsRequest(strings)) => Success(Response(strings.length, strings.mkString(" ")))
+        case Request.RequestType.Hl(HighLowRequest(high, low)) => Success(Response(Response.ResponseType.Hl(HighLowResponse(low, high))))
+        case Request.RequestType.Strings(ListOfStringsRequest(strings)) => Success(Response(Response.ResponseType.Strings(ListOfStringsResponse(strings.mkString(" "), strings.length))))
         case Request.RequestType.Empty => Failure(new Exception("Empty Request"))
       }
       body.map(AWSResponse(_, headers))

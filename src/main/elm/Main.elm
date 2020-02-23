@@ -37,7 +37,7 @@ apiRequest awsRequest responseHandler httpErrorHandler =
 
 
 type Msg
-    = GotResponse Response
+    = GotHL HighLowResponse
     | WrongResponse
     | HttpError Http.Error
 
@@ -45,20 +45,29 @@ type Msg
 init : () -> ( String, Cmd Msg )
 init flags =
     ( "Loading"
-    , apiRequest (RequestTypeHlRequest (HighLowRequest "up" 23)) GotResponse HttpError
+    , apiRequest (RequestTypeHl (HighLowRequest "up" 23))
+        (\response ->
+            case response.responseType of
+                Just (ResponseTypeHl responseHl) ->
+                    GotHL responseHl
+
+                _ ->
+                    WrongResponse
+        )
+        HttpError
     )
 
 
 update msg model =
     case msg of
-        GotResponse result ->
+        GotHL result ->
             ( String.join " " [ result.first |> String.fromInt, result.second ], Cmd.none )
 
         HttpError error ->
             ( error |> Debug.toString, Cmd.none )
 
         WrongResponse ->
-            ( model, Cmd.none )
+            ( "Wrong response", Cmd.none )
 
 
 view model =

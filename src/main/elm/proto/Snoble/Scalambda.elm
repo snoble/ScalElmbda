@@ -2,9 +2,9 @@
 
 
 module Snoble.Scalambda exposing
-    ( Response, HighLowRequest, ListOfStringsRequest, RequestType(..), Request
-    , responseDecoder, highLowRequestDecoder, listOfStringsRequestDecoder, requestDecoder
-    , toResponseEncoder, toHighLowRequestEncoder, toListOfStringsRequestEncoder, toRequestEncoder
+    ( HighLowRequest, HighLowResponse, ListOfStringsRequest, ListOfStringsResponse, RequestType(..), Request, ResponseType(..), Response
+    , highLowRequestDecoder, highLowResponseDecoder, listOfStringsRequestDecoder, listOfStringsResponseDecoder, requestDecoder, responseDecoder
+    , toHighLowRequestEncoder, toHighLowResponseEncoder, toListOfStringsRequestEncoder, toListOfStringsResponseEncoder, toRequestEncoder, toResponseEncoder
     )
 
 {-| ProtoBuf module: `Snoble.Scalambda`
@@ -20,17 +20,17 @@ To run it use [`elm-protocol-buffers`](https://package.elm-lang.org/packages/eri
 
 # Model
 
-@docs Response, HighLowRequest, ListOfStringsRequest, RequestType, Request
+@docs HighLowRequest, HighLowResponse, ListOfStringsRequest, ListOfStringsResponse, RequestType, Request, ResponseType, Response
 
 
 # Decoder
 
-@docs responseDecoder, highLowRequestDecoder, listOfStringsRequestDecoder, requestDecoder
+@docs highLowRequestDecoder, highLowResponseDecoder, listOfStringsRequestDecoder, listOfStringsResponseDecoder, requestDecoder, responseDecoder
 
 
 # Encoder
 
-@docs toResponseEncoder, toHighLowRequestEncoder, toListOfStringsRequestEncoder, toRequestEncoder
+@docs toHighLowRequestEncoder, toHighLowResponseEncoder, toListOfStringsRequestEncoder, toListOfStringsResponseEncoder, toRequestEncoder, toResponseEncoder
 
 -}
 
@@ -42,19 +42,19 @@ import Protobuf.Encode as Encode
 -- MODEL
 
 
-{-| `Response` message
--}
-type alias Response =
-    { first : Int
-    , second : String
-    }
-
-
 {-| `HighLowRequest` message
 -}
 type alias HighLowRequest =
     { high : String
     , low : Int
+    }
+
+
+{-| `HighLowResponse` message
+-}
+type alias HighLowResponse =
+    { first : Int
+    , second : String
     }
 
 
@@ -65,10 +65,18 @@ type alias ListOfStringsRequest =
     }
 
 
+{-| `ListOfStringsResponse` message
+-}
+type alias ListOfStringsResponse =
+    { concatenated : String
+    , length : Int
+    }
+
+
 {-| RequestType
 -}
 type RequestType
-    = RequestTypeHlRequest HighLowRequest
+    = RequestTypeHl HighLowRequest
     | RequestTypeStrings ListOfStringsRequest
 
 
@@ -79,18 +87,22 @@ type alias Request =
     }
 
 
+{-| ResponseType
+-}
+type ResponseType
+    = ResponseTypeHl HighLowResponse
+    | ResponseTypeStrings ListOfStringsResponse
+
+
+{-| `Response` message
+-}
+type alias Response =
+    { responseType : Maybe ResponseType
+    }
+
+
 
 -- DECODER
-
-
-{-| `Response` decoder
--}
-responseDecoder : Decode.Decoder Response
-responseDecoder =
-    Decode.message (Response 0 "")
-        [ Decode.optional 1 Decode.int32 setFirst
-        , Decode.optional 2 Decode.string setSecond
-        ]
 
 
 {-| `HighLowRequest` decoder
@@ -103,6 +115,16 @@ highLowRequestDecoder =
         ]
 
 
+{-| `HighLowResponse` decoder
+-}
+highLowResponseDecoder : Decode.Decoder HighLowResponse
+highLowResponseDecoder =
+    Decode.message (HighLowResponse 0 "")
+        [ Decode.optional 1 Decode.int32 setFirst
+        , Decode.optional 2 Decode.string setSecond
+        ]
+
+
 {-| `ListOfStringsRequest` decoder
 -}
 listOfStringsRequestDecoder : Decode.Decoder ListOfStringsRequest
@@ -112,31 +134,44 @@ listOfStringsRequestDecoder =
         ]
 
 
+{-| `ListOfStringsResponse` decoder
+-}
+listOfStringsResponseDecoder : Decode.Decoder ListOfStringsResponse
+listOfStringsResponseDecoder =
+    Decode.message (ListOfStringsResponse "" 0)
+        [ Decode.optional 1 Decode.string setConcatenated
+        , Decode.optional 2 Decode.int32 setLength
+        ]
+
+
 {-| `Request` decoder
 -}
 requestDecoder : Decode.Decoder Request
 requestDecoder =
     Decode.message (Request Nothing)
         [ Decode.oneOf
-            [ ( 1, Decode.map RequestTypeHlRequest highLowRequestDecoder )
+            [ ( 1, Decode.map RequestTypeHl highLowRequestDecoder )
             , ( 2, Decode.map RequestTypeStrings listOfStringsRequestDecoder )
             ]
             setRequestType
         ]
 
 
+{-| `Response` decoder
+-}
+responseDecoder : Decode.Decoder Response
+responseDecoder =
+    Decode.message (Response Nothing)
+        [ Decode.oneOf
+            [ ( 1, Decode.map ResponseTypeHl highLowResponseDecoder )
+            , ( 2, Decode.map ResponseTypeStrings listOfStringsResponseDecoder )
+            ]
+            setResponseType
+        ]
+
+
 
 -- ENCODER
-
-
-{-| `Response` encoder
--}
-toResponseEncoder : Response -> Encode.Encoder
-toResponseEncoder model =
-    Encode.message
-        [ ( 1, Encode.int32 model.first )
-        , ( 2, Encode.string model.second )
-        ]
 
 
 {-| `HighLowRequest` encoder
@@ -149,6 +184,16 @@ toHighLowRequestEncoder model =
         ]
 
 
+{-| `HighLowResponse` encoder
+-}
+toHighLowResponseEncoder : HighLowResponse -> Encode.Encoder
+toHighLowResponseEncoder model =
+    Encode.message
+        [ ( 1, Encode.int32 model.first )
+        , ( 2, Encode.string model.second )
+        ]
+
+
 {-| `ListOfStringsRequest` encoder
 -}
 toListOfStringsRequestEncoder : ListOfStringsRequest -> Encode.Encoder
@@ -158,10 +203,20 @@ toListOfStringsRequestEncoder model =
         ]
 
 
+{-| `ListOfStringsResponse` encoder
+-}
+toListOfStringsResponseEncoder : ListOfStringsResponse -> Encode.Encoder
+toListOfStringsResponseEncoder model =
+    Encode.message
+        [ ( 1, Encode.string model.concatenated )
+        , ( 2, Encode.int32 model.length )
+        ]
+
+
 toRequestTypeEncoder : RequestType -> ( Int, Encode.Encoder )
 toRequestTypeEncoder model =
     case model of
-        RequestTypeHlRequest value ->
+        RequestTypeHl value ->
             ( 1, toHighLowRequestEncoder value )
 
         RequestTypeStrings value ->
@@ -177,18 +232,27 @@ toRequestEncoder model =
         ]
 
 
+toResponseTypeEncoder : ResponseType -> ( Int, Encode.Encoder )
+toResponseTypeEncoder model =
+    case model of
+        ResponseTypeHl value ->
+            ( 1, toHighLowResponseEncoder value )
+
+        ResponseTypeStrings value ->
+            ( 2, toListOfStringsResponseEncoder value )
+
+
+{-| `Response` encoder
+-}
+toResponseEncoder : Response -> Encode.Encoder
+toResponseEncoder model =
+    Encode.message
+        [ Maybe.withDefault ( 0, Encode.none ) <| Maybe.map toResponseTypeEncoder model.responseType
+        ]
+
+
 
 -- SETTERS
-
-
-setFirst : a -> { b | first : a } -> { b | first : a }
-setFirst value model =
-    { model | first = value }
-
-
-setSecond : a -> { b | second : a } -> { b | second : a }
-setSecond value model =
-    { model | second = value }
 
 
 setHigh : a -> { b | high : a } -> { b | high : a }
@@ -201,11 +265,36 @@ setLow value model =
     { model | low = value }
 
 
+setFirst : a -> { b | first : a } -> { b | first : a }
+setFirst value model =
+    { model | first = value }
+
+
+setSecond : a -> { b | second : a } -> { b | second : a }
+setSecond value model =
+    { model | second = value }
+
+
 setParts : a -> { b | parts : a } -> { b | parts : a }
 setParts value model =
     { model | parts = value }
 
 
+setConcatenated : a -> { b | concatenated : a } -> { b | concatenated : a }
+setConcatenated value model =
+    { model | concatenated = value }
+
+
+setLength : a -> { b | length : a } -> { b | length : a }
+setLength value model =
+    { model | length = value }
+
+
 setRequestType : a -> { b | requestType : a } -> { b | requestType : a }
 setRequestType value model =
     { model | requestType = value }
+
+
+setResponseType : a -> { b | responseType : a } -> { b | responseType : a }
+setResponseType value model =
+    { model | responseType = value }
