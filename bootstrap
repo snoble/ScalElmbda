@@ -1,4 +1,4 @@
 #!/bin/sh
 cd $LAMBDA_TASK_ROOT
-./bazel-out/k8-fastbuild/bin/scalambda-simple-native-bin
+./bazel-out/k8-fastbuild/bin/scalelmbda-simple-native-bin
 
