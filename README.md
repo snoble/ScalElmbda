@@ -1,4 +1,4 @@
-# ScaLambda
+# ScalElmbda
 
 ## Commands
 Update protobuf code for elm: `protoc --elm_out=./src/main/elm/proto/ ./src/main/proto/*.proto`
